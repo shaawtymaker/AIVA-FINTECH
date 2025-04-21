@@ -41,7 +41,7 @@ type Message = {
 
 const ChatInterface = () => {
   const [messages, setMessages] = useState<Message[]>([
-    { text: "नमस्ते! I'm your AI financial assistant. How can I help you with your finances today?", isBot: true }
+    { text: "नमस्ते! I'm your AIVA financial assistant. How can I help you with your finances today?", isBot: true }
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
@@ -60,7 +60,7 @@ const ChatInterface = () => {
 
   const generateResponse = async (userMessage: string): Promise<string> => {
     try {
-      const response = await fetch('http://192.168.90.76:8080/v1/chat/completions', {
+      const response = await fetch('http://192.168.176.77:8080/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

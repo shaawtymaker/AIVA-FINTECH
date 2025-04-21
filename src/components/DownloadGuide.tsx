@@ -81,7 +81,7 @@ const DownloadGuide = () => {
     doc.setFontSize(12);
     doc.setTextColor(100, 100, 100);
     doc.text("For more personalized financial guidance, contact us at:", 20, 180);
-    doc.text("support@financegwhisper.com", 20, 190);
+    doc.text("support@AIVA.com", 20, 190);
     
     // Save the PDF
     doc.save("beginners_investment_guide.pdf");
