@@ -2,7 +2,7 @@
 
 ## Project info
 
-**URL**: aurora-wealth-whisper-36.lovable.app
+**URL**: https://aurora-wealth-whisper-36.lovable.app/
 
 
 **Use your preferred IDE**
