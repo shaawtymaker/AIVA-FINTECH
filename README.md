@@ -339,6 +339,6 @@ This project is private. All rights reserved © 2024–2025 AIVA-FINTECH.
 
 **Built with ❤️ for smarter financial decisions in India**
 
-[🌐 Live App](https://aurora-wealth-whisper-36.lovable.app/) • [🐛 Report Bug](https://github.com/shaawtymaker/AIVA-FINTECH/issues) • [💡 Request Feature](https://github.com/shaawtymaker/AIVA-FINTECH/issues)
+[🌐 Live App](https://aiva-36.lovable.app/) • [🐛 Report Bug](https://github.com/shaawtymaker/AIVA-FINTECH/issues) • [💡 Request Feature](https://github.com/shaawtymaker/AIVA-FINTECH/issues)
 
 </div>
