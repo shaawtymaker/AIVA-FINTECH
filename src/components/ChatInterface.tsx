@@ -60,7 +60,7 @@ const ChatInterface = () => {
 
   const generateResponse = async (userMessage: string): Promise<string> => {
     try {
-      const response = await fetch('http://192.168.176.77:8080/v1/chat/completions', {
+      const response = await fetch('http://192.168.56.1:8080/v1/chat/completions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

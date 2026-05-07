@@ -72,11 +72,12 @@ const SignupForm: React.FC = () => {
       });
       
       // Redirect happens automatically via the auth listener
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "There was an error creating your account. Please try again.";
       console.error("Signup error:", error);
       toast({
         title: "Signup failed",
-        description: error.message || "There was an error creating your account. Please try again.",
+        description: message,
         variant: "destructive",
       });
     } finally {

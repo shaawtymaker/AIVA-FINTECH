@@ -113,10 +113,11 @@ const ProfileSettings = () => {
         title: "Settings updated",
         description: "Your profile settings have been saved successfully.",
       });
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update profile settings.";
       toast({
         title: "Update failed",
-        description: error.message || "Failed to update profile settings.",
+        description: message,
         variant: "destructive",
       });
     } finally {
