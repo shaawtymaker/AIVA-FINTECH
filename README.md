@@ -6,8 +6,8 @@
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-aiva--36.lovable.app-blueviolet?style=for-the-badge&logo=vercel)](https://aiva-36.lovable.app/)
 [![CI/CD](https://img.shields.io/github/actions/workflow/status/shaawtymaker/AIVA-FINTECH/ci.yml?branch=master&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/shaawtymaker/AIVA-FINTECH/actions)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/)
-[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Docker Hub](https://img.shields.io/badge/Docker%20Hub-Published-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/r/shaawtymaker/aiva-fintech)
+[![Vercel](https://img.shields.io/badge/Vercel-Deployed-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
@@ -131,23 +131,33 @@ All calculators output results in **Indian Rupees (₹)** using `en-IN` locale f
 | **Repository** | GitHub | Code hosting, issues, pull requests |
 | **CI/CD** | GitHub Actions | Automated lint, build, Docker push, and Vercel deploy |
 | **Containerization** | Docker | Multi-stage build with Node 20 Alpine + nginx Alpine |
+| **Container Registry** | Docker Hub | Published images at `shaawtymaker/aiva-fintech` |
 | **Deployment** | Vercel | Production hosting with edge CDN, SPA rewrites, and security headers |
+| **Linting** | ESLint 9 + TypeScript ESLint | Code quality enforcement with zero errors |
+| **Type Checking** | TypeScript `tsc --noEmit` | Compile-time type safety |
 
 ### CI/CD Pipeline
 
-Every push to `master` triggers the following automated pipeline:
+Every push to `master` triggers the following fully automated pipeline:
 
 ```
-🔍 Lint & Type Check  →  🏗️ Build  ─┬─→  🐳 Docker Push (Docker Hub)
-                                      └─→  ▲ Deploy (Vercel Production)
+┌─────────────────────┐     ┌──────────┐     ┌────────────────────────┐
+│ 🔍 Lint & Type Check│────▶│ 🏗️ Build │──┬──▶│ 🐳 Docker Hub Push     │
+│   ESLint + tsc      │     │ Vite prod │  │  │   shaawtymaker/        │
+│   0 errors ✅        │     │ bundle    │  │  │   aiva-fintech:latest  │
+└─────────────────────┘     └──────────┘  │  └────────────────────────┘
+                                          │  ┌────────────────────────┐
+                                          └──▶│ ▲ Vercel Production    │
+                                              │   Edge CDN deploy     │
+                                              └────────────────────────┘
 ```
 
 | Job | Trigger | Description |
 |---|---|---|
-| **Lint & Type Check** | Push + PRs | Runs ESLint and `tsc --noEmit` for type safety |
-| **Build** | After lint passes | Produces optimized production bundle, uploads as artifact |
-| **Docker Build & Push** | Push to master | Builds multi-stage Docker image & pushes to Docker Hub |
-| **Vercel Deploy** | Push to master | Deploys production build to Vercel edge network |
+| **🔍 Lint & Type Check** | Push + PRs | Runs ESLint (0 errors) and `tsc --noEmit` for type safety |
+| **🏗️ Build** | After lint passes | Produces optimized production bundle (~1.6 MB), uploads as artifact |
+| **🐳 Docker Build & Push** | Push to master | Builds multi-stage Docker image & pushes to Docker Hub with SHA + `latest` tags |
+| **▲ Vercel Deploy** | Push to master | Deploys production build to Vercel edge network with security headers |
 
 ### Docker
 
@@ -156,6 +166,16 @@ The project uses a **multi-stage Dockerfile** for an optimized production image:
 - **Stage 1 (Builder)** — Node 20 Alpine installs dependencies and builds the Vite production bundle
 - **Stage 2 (Production)** — nginx Alpine serves the static files with gzip compression, SPA routing, and aggressive asset caching
 - **Final image size**: ~25 MB
+
+### Pull from Docker Hub
+
+```sh
+# Pull the latest image
+docker pull shaawtymaker/aiva-fintech:latest
+
+# Run it
+docker run -d -p 3000:80 shaawtymaker/aiva-fintech:latest
+```
 
 ---
 
@@ -372,17 +392,36 @@ The `vercel.json` configuration handles:
 
 ## ⚙️ CI/CD Setup (GitHub Actions)
 
-The CI/CD pipeline at `.github/workflows/ci.yml` runs automatically. To enable Docker Hub push and Vercel deploy, add the following secrets to your GitHub repository:
+The CI/CD pipeline at `.github/workflows/ci.yml` runs automatically on every push to `master` and on pull requests.
 
-**GitHub → Settings → Secrets and variables → Actions → New repository secret**
+### Required GitHub Secrets
 
-| Secret | How to Get It |
+Add these secrets at **GitHub → Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret | How to Get It | Required For |
+|---|---|---|
+| `DOCKERHUB_USERNAME` | Your Docker Hub username | 🐳 Docker Push |
+| `DOCKERHUB_TOKEN` | Docker Hub → Account Settings → Security → [New Access Token](https://hub.docker.com/settings/security) | 🐳 Docker Push |
+| `VERCEL_TOKEN` | Vercel → Account Settings → [Tokens → Create](https://vercel.com/account/tokens) | ▲ Vercel Deploy |
+
+### Environment Variables
+
+These should be set in your hosting environment (Vercel dashboard / `.env` locally):
+
+| Variable | Description |
 |---|---|
-| `DOCKERHUB_USERNAME` | Your Docker Hub username |
-| `DOCKERHUB_TOKEN` | Docker Hub → Account Settings → Security → [New Access Token](https://hub.docker.com/settings/security) |
-| `VERCEL_TOKEN` | Vercel → Account Settings → [Tokens → Create](https://vercel.com/account/tokens) |
+| `VITE_SUPABASE_URL` | Supabase project URL |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anonymous key |
 
 > **Note:** The lint and build jobs run without any secrets. Only the Docker push and Vercel deploy steps require the secrets above.
+
+### Pipeline Status
+
+All 4 jobs are currently ✅ **passing**:
+- 🔍 Lint & Type Check — 0 errors, 8 non-blocking warnings
+- 🏗️ Build — 2200 modules, ~21s build time
+- 🐳 Docker Build & Push — Pushes `shaawtymaker/aiva-fintech:latest`
+- ▲ Vercel Deploy — Production edge deployment
 
 ---
 
@@ -453,7 +492,7 @@ Please ensure code follows the existing TypeScript and ESLint conventions.
 
 ## 📄 License
 
-This project is private. All rights reserved © 2024–2025 AIVA-FINTECH.
+This project is private. All rights reserved © 2024–2026 AIVA-FINTECH.
 
 ---
 
@@ -461,6 +500,6 @@ This project is private. All rights reserved © 2024–2025 AIVA-FINTECH.
 
 **Built with ❤️ for smarter financial decisions in India**
 
-[🌐 Live App](https://aiva-36.lovable.app/) • [🐛 Report Bug](https://github.com/shaawtymaker/AIVA-FINTECH/issues) • [💡 Request Feature](https://github.com/shaawtymaker/AIVA-FINTECH/issues)
+[🌐 Live App](https://aiva-36.lovable.app/) • [🐳 Docker Hub](https://hub.docker.com/r/shaawtymaker/aiva-fintech) • [🐛 Report Bug](https://github.com/shaawtymaker/AIVA-FINTECH/issues) • [💡 Request Feature](https://github.com/shaawtymaker/AIVA-FINTECH/issues)
 
 </div>
