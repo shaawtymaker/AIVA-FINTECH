@@ -4,13 +4,17 @@
 
 ### _Artificial Intelligence Value Assistant for Indian Personal Finance_
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-aurora--wealth--whisper--36.lovable.app-blueviolet?style=for-the-badge&logo=vercel)](https://aurora-wealth-whisper-36.lovable.app/)
-[![LM Studio](https://img.shields.io/badge/LLM-LM%20Studio-FF6B35?style=for-the-badge&logo=ai)](https://lmstudio.ai/)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-aiva--36.lovable.app-blueviolet?style=for-the-badge&logo=vercel)](https://aiva-36.lovable.app/)
+[![CI/CD](https://img.shields.io/github/actions/workflow/status/shaawtymaker/AIVA-FINTECH/ci.yml?branch=master&style=for-the-badge&logo=githubactions&logoColor=white&label=CI%2FCD)](https://github.com/shaawtymaker/AIVA-FINTECH/actions)
+[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://hub.docker.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-Deploy-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+
 [![React](https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite)](https://vitejs.dev/)
 [![Supabase](https://img.shields.io/badge/Supabase-Auth%20%26%20DB-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com/)
 [![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.4-06B6D4?style=for-the-badge&logo=tailwindcss)](https://tailwindcss.com/)
+[![LM Studio](https://img.shields.io/badge/LLM-LM%20Studio-FF6B35?style=for-the-badge&logo=ai)](https://lmstudio.ai/)
 
 > **AIVA** is an AI-powered personal finance web application tailored for the **Indian market**. It delivers intelligent financial advice through an **LM Studio**-powered local LLM chat interface, interactive financial calculators, curated learning resources, and investment education — all within a stunning, animated glassmorphism UI.
 
@@ -119,51 +123,94 @@ All calculators output results in **Indian Rupees (₹)** using `en-IN` locale f
 
 ---
 
+## 🔧 DevOps & Tooling
+
+| Category | Tool | Purpose |
+|---|---|---|
+| **Version Control** | Git | Source code versioning |
+| **Repository** | GitHub | Code hosting, issues, pull requests |
+| **CI/CD** | GitHub Actions | Automated lint, build, Docker push, and Vercel deploy |
+| **Containerization** | Docker | Multi-stage build with Node 20 Alpine + nginx Alpine |
+| **Deployment** | Vercel | Production hosting with edge CDN, SPA rewrites, and security headers |
+
+### CI/CD Pipeline
+
+Every push to `master` triggers the following automated pipeline:
+
+```
+🔍 Lint & Type Check  →  🏗️ Build  ─┬─→  🐳 Docker Push (Docker Hub)
+                                      └─→  ▲ Deploy (Vercel Production)
+```
+
+| Job | Trigger | Description |
+|---|---|---|
+| **Lint & Type Check** | Push + PRs | Runs ESLint and `tsc --noEmit` for type safety |
+| **Build** | After lint passes | Produces optimized production bundle, uploads as artifact |
+| **Docker Build & Push** | Push to master | Builds multi-stage Docker image & pushes to Docker Hub |
+| **Vercel Deploy** | Push to master | Deploys production build to Vercel edge network |
+
+### Docker
+
+The project uses a **multi-stage Dockerfile** for an optimized production image:
+
+- **Stage 1 (Builder)** — Node 20 Alpine installs dependencies and builds the Vite production bundle
+- **Stage 2 (Production)** — nginx Alpine serves the static files with gzip compression, SPA routing, and aggressive asset caching
+- **Final image size**: ~25 MB
+
+---
+
 ## 🗂️ Project Structure
 
 ```
 AIVA-FINTECH/
-├── public/                     # Static assets
+├── .github/
+│   └── workflows/
+│       └── ci.yml                 # GitHub Actions CI/CD pipeline
+├── public/                        # Static assets
 ├── src/
-│   ├── App.tsx                 # Root app with routing
-│   ├── main.tsx                # React entry point
-│   ├── index.css               # Global styles & Tailwind base
+│   ├── App.tsx                    # Root app with routing
+│   ├── main.tsx                   # React entry point
+│   ├── index.css                  # Global styles & Tailwind base
 │   ├── pages/
-│   │   ├── Index.tsx           # Landing page (Hero + Features + CTA)
-│   │   ├── Chat.tsx            # Dedicated AI chat page
-│   │   ├── Investing.tsx       # Investment fundamentals
-│   │   ├── Learn.tsx           # Financial education center
-│   │   ├── Resources.tsx       # Financial calculators hub
-│   │   ├── FeatureDetailed.tsx # Detailed feature subpages
-│   │   ├── Auth.tsx            # Login / Signup page
-│   │   └── NotFound.tsx        # 404 page
+│   │   ├── Index.tsx              # Landing page (Hero + Features + CTA)
+│   │   ├── Chat.tsx               # Dedicated AI chat page
+│   │   ├── Investing.tsx          # Investment fundamentals
+│   │   ├── Learn.tsx              # Financial education center
+│   │   ├── Resources.tsx          # Financial calculators hub
+│   │   ├── FeatureDetailed.tsx    # Detailed feature subpages
+│   │   ├── Auth.tsx               # Login / Signup page
+│   │   └── NotFound.tsx           # 404 page
 │   ├── components/
-│   │   ├── ChatInterface.tsx   # AI chat UI with LLM integration
-│   │   ├── ChatMessage.tsx     # Individual chat message bubble
-│   │   ├── FinancialCalculator.tsx  # Multi-type calculator component
-│   │   ├── ProfileSettings.tsx # User profile settings (tabbed)
-│   │   ├── AnimatedBackground.tsx   # Animated gradient background
-│   │   ├── Navbar.tsx          # Top navigation bar
-│   │   ├── FeatureCard.tsx     # Feature grid card with gradient
-│   │   ├── FinancialArticle.tsx # Expandable article component
-│   │   ├── DownloadGuide.tsx   # PDF guide download button
-│   │   ├── ThemeToggle.tsx     # Dark/Light mode toggle
-│   │   ├── UserMenu.tsx        # Auth-aware user dropdown
-│   │   ├── auth/               # Auth form components
-│   │   └── ui/                 # shadcn/ui component library (49 components)
+│   │   ├── ChatInterface.tsx      # AI chat UI with LLM integration
+│   │   ├── ChatMessage.tsx        # Individual chat message bubble
+│   │   ├── FinancialCalculator.tsx # Multi-type calculator component
+│   │   ├── ProfileSettings.tsx    # User profile settings (tabbed)
+│   │   ├── AnimatedBackground.tsx # Animated gradient background
+│   │   ├── Navbar.tsx             # Top navigation bar
+│   │   ├── FeatureCard.tsx        # Feature grid card with gradient
+│   │   ├── FinancialArticle.tsx   # Expandable article component
+│   │   ├── DownloadGuide.tsx      # PDF guide download button
+│   │   ├── ThemeToggle.tsx        # Dark/Light mode toggle
+│   │   ├── UserMenu.tsx           # Auth-aware user dropdown
+│   │   ├── auth/                  # Auth form components
+│   │   └── ui/                    # shadcn/ui component library (49 components)
 │   ├── contexts/
-│   │   └── AuthContext.tsx     # Supabase session + profile context
+│   │   └── AuthContext.tsx        # Supabase session + profile context
 │   ├── hooks/
-│   │   └── use-toast.ts        # Toast notification hook
+│   │   └── use-toast.ts           # Toast notification hook
 │   ├── integrations/
-│   │   └── supabase/           # Supabase client + type definitions
+│   │   └── supabase/              # Supabase client + type definitions
 │   ├── lib/
-│   │   └── utils.ts            # Tailwind merge utility
+│   │   └── utils.ts               # Tailwind merge utility
 │   └── providers/
-│       └── ThemeProvider.tsx   # next-themes dark mode provider
-├── supabase/                   # Supabase config & migrations
-├── tailwind.config.ts          # Tailwind theme (finance color palette)
-├── vite.config.ts              # Vite build config
+│       └── ThemeProvider.tsx       # next-themes dark mode provider
+├── supabase/                      # Supabase config & migrations
+├── .dockerignore                  # Files excluded from Docker build context
+├── Dockerfile                     # Multi-stage Docker build (Node → nginx)
+├── nginx.conf                     # nginx config for SPA routing & gzip
+├── vercel.json                    # Vercel deployment config & SPA rewrites
+├── tailwind.config.ts             # Tailwind theme (finance color palette)
+├── vite.config.ts                 # Vite build config
 └── package.json
 ```
 
@@ -197,6 +244,7 @@ Additional UI patterns:
 - A **Supabase** project (for Auth & DB)
 - **[LM Studio](https://lmstudio.ai/)** installed and running with the `hermes-3-llama-3.1-8b` model loaded  
   (any model available in LM Studio that supports chat completions will work)
+- **Docker** (optional, for containerized deployment)
 
 ### Installation
 
@@ -266,6 +314,78 @@ Output is generated in the `dist/` folder.
 
 ---
 
+## 🐳 Docker Deployment
+
+Build and run the production Docker image locally:
+
+```sh
+# Build the image
+docker build -t aiva-fintech .
+
+# Run the container
+docker run -d -p 3000:80 --name aiva-fintech aiva-fintech
+```
+
+The app will be available at `http://localhost:3000`
+
+#### Docker Commands Reference
+
+| Command | Description |
+|---|---|
+| `docker build -t aiva-fintech .` | Build the production image |
+| `docker run -d -p 3000:80 --name aiva-fintech aiva-fintech` | Run in detached mode on port 3000 |
+| `docker stop aiva-fintech` | Stop the running container |
+| `docker start aiva-fintech` | Restart a stopped container |
+| `docker rm aiva-fintech` | Remove the container |
+| `docker logs aiva-fintech` | View nginx access/error logs |
+| `docker images aiva-fintech` | Check image size |
+
+---
+
+## ▲ Vercel Deployment
+
+### One-Click Deploy
+
+Deploy directly from the command line:
+
+```sh
+# Install Vercel CLI
+npm install -g vercel
+
+# Deploy to production
+vercel --prod
+```
+
+### Auto-Deploy via GitHub
+
+1. Go to [vercel.com](https://vercel.com) and import your GitHub repository
+2. Vercel auto-detects the Vite framework from `vercel.json`
+3. Every push to `master` triggers an automatic production deployment
+4. Pull requests get preview deployments with unique URLs
+
+The `vercel.json` configuration handles:
+- SPA route rewrites (all routes → `index.html`)
+- Static asset caching (1 year, immutable)
+- Security headers (`X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`)
+
+---
+
+## ⚙️ CI/CD Setup (GitHub Actions)
+
+The CI/CD pipeline at `.github/workflows/ci.yml` runs automatically. To enable Docker Hub push and Vercel deploy, add the following secrets to your GitHub repository:
+
+**GitHub → Settings → Secrets and variables → Actions → New repository secret**
+
+| Secret | How to Get It |
+|---|---|
+| `DOCKERHUB_USERNAME` | Your Docker Hub username |
+| `DOCKERHUB_TOKEN` | Docker Hub → Account Settings → Security → [New Access Token](https://hub.docker.com/settings/security) |
+| `VERCEL_TOKEN` | Vercel → Account Settings → [Tokens → Create](https://vercel.com/account/tokens) |
+
+> **Note:** The lint and build jobs run without any secrets. Only the Docker push and Vercel deploy steps require the secrets above.
+
+---
+
 ## 🗃️ Database Schema (Supabase)
 
 The app uses a `profiles` table in Supabase PostgreSQL:
@@ -318,6 +438,8 @@ Contributions are welcome! To contribute:
 3. Commit your changes: `git commit -m 'Add: your feature description'`
 4. Push to the branch: `git push origin feature/your-feature-name`
 5. Open a Pull Request
+
+The CI/CD pipeline will automatically run lint and build checks on your PR.
 
 Please ensure code follows the existing TypeScript and ESLint conventions.
 
